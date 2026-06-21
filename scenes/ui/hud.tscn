@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://u78ytjnm3p8re"]
+[gd_scene load_steps=3 format=3 uid="uid://u78ytjnm3p8re"]
 
 [ext_resource type="Script" path="res://scenes/ui/hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scenes/ui/joystick_visual.gd" id="2_joystick"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -12,6 +13,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="JoystickVisual" type="Node2D" parent="Control"]
+script = ExtResource("2_joystick")
 
 [node name="HPBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
