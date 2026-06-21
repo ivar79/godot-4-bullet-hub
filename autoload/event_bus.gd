@@ -26,3 +26,7 @@ signal wave_completed(wave_number: int)
 signal game_started
 signal game_paused(is_paused: bool)
 signal game_over(final_score: int, time_survived: float)
+
+# سیگنال جوی‌استیک لمسی موبایل
+signal joystick_updated(active: bool, start_pos: Vector2, current_dir: Vector2)
+
