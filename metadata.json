@@ -1,0 +1,6 @@
+{
+  "name": "Godot 4 Bullet Hub",
+  "description": "معماری پایه و آفلاین ساختار بازی Bullet-Heaven (Survivor.io) در موتور بازی‌سازی Godot 4",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
