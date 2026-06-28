@@ -16,8 +16,8 @@ var time_elapsed: float = 0.0
 
 func _ready() -> void:
 	# اتصال به رویدادهای عمومی در EventBus
-	EventBus.connect("enemy_died", Callable(self, "_on_enemy_died"))
-	EventBus.connect("player_died", Callable(self, "_on_player_died"))
+	EventBus.enemy_died.connect(_on_enemy_died)
+	EventBus.player_died.connect(_on_player_died)
 
 func _process(delta: float) -> void:
 	if is_game_active:
@@ -31,25 +31,25 @@ func start_game() -> void:
 	current_xp = 0
 	xp_to_next_level = 100
 	time_elapsed = 0.0
-	EventBus.emit_signal("game_started")
+	EventBus.game_started.emit()
 
 func pause_game(is_paused: bool) -> void:
 	get_tree().paused = is_paused
-	EventBus.emit_signal("game_paused", is_paused)
+	EventBus.game_paused.emit(is_paused)
 
 func add_xp(amount: int) -> void:
 	current_xp += amount
 	if current_xp >= xp_to_next_level:
 		level_up()
 	else:
-		EventBus.emit_signal("xp_collected", amount, current_xp, xp_to_next_level)
+		EventBus.xp_collected.emit(amount, current_xp, xp_to_next_level)
 
 func level_up() -> void:
 	current_xp -= xp_to_next_level
 	current_level += 1
 	xp_to_next_level = int(xp_to_next_level * 1.5) # افزایش سختی تراز بعدی
-	EventBus.emit_signal("player_level_up", current_level)
-	EventBus.emit_signal("xp_collected", 0, current_xp, xp_to_next_level)
+	EventBus.player_level_up.emit(current_level)
+	EventBus.xp_collected.emit(0, current_xp, xp_to_next_level)
 
 func _on_enemy_died(_enemy_node: CharacterBody2D, score_value: int, xp_value: int) -> void:
 	current_score += score_value
@@ -59,4 +59,4 @@ func _on_player_died() -> void:
 	is_game_active = false
 	# ذخیره خودکار امتیاز با SaveManager
 	SaveManager.save_high_score(current_score)
-	EventBus.emit_signal("game_over", current_score, time_elapsed)
+	EventBus.game_over.emit(current_score, time_elapsed)

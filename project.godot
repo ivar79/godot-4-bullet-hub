@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Bullet Heaven Godot 4 Mobile Template"
 run/main_scene="res://scenes/levels/main_level.tscn"
-config/features=PackedStringArray("4.7", "Forward Plus")
+config/features=PackedStringArray("4.7", "Mobile")
 
 [autoload]
 
@@ -65,3 +65,22 @@ move_down={
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+
+[layer_names]
+
+2d_physics/layer_1="world"
+2d_physics/layer_2="enemies"
+2d_physics/layer_3="player"
+2d_physics/layer_4="bullets"
+2d_physics/layer_5="gems"
+
+[physics]
+
+common/physics_ticks_per_second=30
+2d/default_gravity=0
+
+[rendering]
+
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.08, 0.05, 0.12, 1)

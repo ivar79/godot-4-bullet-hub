@@ -1,55 +1,58 @@
 extends CanvasLayer
 
-# -------------------------------------------------------------
-# LevelUpPanel - واسط پیشفرض ارتقا تراز و ارتقای متوقف کننده بازی
-# نقش: ایجاد یک وقفه استراتژیک در هنگام عبور از تراز قبلی (Level Up)،
-# نمایش و انتخاب ۳ گزینه ارتقای تصادفی ملموس، اعمال بوف به بازیکن،
-# و فعال‌سازی مجدد جریان بازی پس از کلیک.
-# -------------------------------------------------------------
-
 @onready var option1_btn: Button = $Control/Panel/MarginContainer/VBoxContainer/Option1
 @onready var option2_btn: Button = $Control/Panel/MarginContainer/VBoxContainer/Option2
 @onready var option3_btn: Button = $Control/Panel/MarginContainer/VBoxContainer/Option3
 
-var player: Player = null
+var ALL_UPGRADES = [
+	{"title": "Speed Boost",      "type": "speed",      "value": 1.20},
+	{"title": "Damage Up",        "type": "damage",     "value": 1.30},
+	{"title": "Heal",             "type": "health",     "value": 0.50},
+	{"title": "Fire Rate",        "type": "fire_rate",  "value": 1.25},
+	{"title": "Defense",          "type": "armor",      "value": 5.0},
+	{"title": "New Weapon",       "type": "weapon",     "value": 0.0},
+	{"title": "Gem Magnet",       "type": "magnet",     "value": 1.5},
+	{"title": "Projectile Speed", "type": "proj_speed", "value": 1.20},
+]
 
 func _ready() -> void:
-	# متوقف کردن کل موتور بازی برای پاز تداخلی
 	get_tree().paused = true
-	
-	# اتصال به هاب بازیکن در صحنه جاری
-	var players = get_tree().get_nodes_in_group("player")
-	if players.size() > 0:
-		player = players[0] as Player
-		
-	# تنظیم متن‌ها و استایل دکمه‌های ارتقا به زبان فارسی
-	option1_btn.text = "⚡ افزایش سرعت جابجایی (+۱۵٪)"
-	option2_btn.text = "💥 تقویت قدرت ضرباتی شلیک (+۲۵٪)"
-	option3_btn.text = "❤️ بازیابی کامل میزان سلامتی (Heal)"
-	
-	option1_btn.connect("pressed", Callable(self, "_on_option_1_pressed"))
-	option2_btn.connect("pressed", Callable(self, "_on_option_2_pressed"))
-	option3_btn.connect("pressed", Callable(self, "_on_option_3_pressed"))
+	ALL_UPGRADES.shuffle()
+	var chosen = ALL_UPGRADES.slice(0, 3)
+	_setup_button(option1_btn, chosen[0])
+	_setup_button(option2_btn, chosen[1])
+	_setup_button(option3_btn, chosen[2])
 
-func _on_option_1_pressed() -> void:
-	if player and is_instance_valid(player):
-		player.stats.base_speed = player.stats.base_speed * 1.15
-	_resume()
+func _setup_button(btn: Button, upgrade: Dictionary) -> void:
+	btn.text = upgrade["title"]
+	btn.pressed.connect(func(): _apply_upgrade(upgrade))
 
-func _on_option_2_pressed() -> void:
-	if player and is_instance_valid(player):
-		# تقویت قدرت تمامی اسلحه های مجهز شده بازیکن
-		for weapon in player.equipped_weapons:
-			weapon.base_damage = weapon.base_damage * 1.25
-	_resume()
-
-func _on_option_3_pressed() -> void:
-	if player and is_instance_valid(player):
-		# بازیابی کامل سلامتی قهرمان
-		player.heal(player.stats.max_health)
+func _apply_upgrade(upgrade: Dictionary) -> void:
+	var player = get_tree().get_first_node_in_group("player")
+	if player == null:
+		_resume()
+		return
+	match upgrade["type"]:
+		"speed":
+			player.stats.base_speed *= upgrade["value"]
+		"damage":
+			for w in player.equipped_weapons:
+				w.base_damage *= upgrade["value"]
+		"health":
+			player.heal(player.stats.max_health * upgrade["value"])
+		"fire_rate":
+			for w in player.equipped_weapons:
+				w.fire_rate *= upgrade["value"]
+		"armor":
+			player.stats.defense += upgrade["value"]
+		"magnet":
+			for gem in get_tree().get_nodes_in_group("gems"):
+				gem.magnet_radius *= upgrade["value"]
+		"proj_speed":
+			for w in player.equipped_weapons:
+				w.projectile_speed *= upgrade["value"]
 	_resume()
 
 func _resume() -> void:
-	# لغو وقفه بازی و بستن پنل لول‌آپ
 	get_tree().paused = false
 	queue_free()

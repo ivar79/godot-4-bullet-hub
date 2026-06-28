@@ -18,9 +18,8 @@ func _ready() -> void:
 	var seconds = int(GameManager.time_elapsed) % 60
 	time_label.text = "مدت زمان بقاء: %02d:%02d" % [minutes, seconds]
 	
-	restart_btn.connect("pressed", Callable(self, "_on_restart_pressed"))
+	restart_btn.pressed.connect(_on_restart_pressed)
 
 func _on_restart_pressed() -> void:
-	# احیای جریان زمانی و بارگذاری مجدد صحنه بقا
 	get_tree().paused = false
-	get_tree().reload_current_scene()
+	get_tree().change_scene_to_file("res://scenes/levels/main_level.tscn")

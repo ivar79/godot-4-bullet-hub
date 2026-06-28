@@ -2,16 +2,16 @@
 
 [ext_resource type="Script" path="res://scenes/enemies/enemy_base.gd" id="1_enm8y"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_enm7p"]
-radius = 14.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enm7p"]
+size = Vector2(28, 28)
 
 [node name="EnemyBase" type="CharacterBody2D" groups=["enemies"]]
-collision_layer = 4
-collision_mask = 3
+collision_layer = 2
+collision_mask = 4
 script = ExtResource("1_enm8y")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 # Sprite representation for enemy model
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_enm7p")
+shape = SubResource("RectangleShape2D_enm7p")

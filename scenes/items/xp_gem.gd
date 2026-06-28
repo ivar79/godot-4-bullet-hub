@@ -12,17 +12,17 @@ extends Area2D
 @export var collect_radius: float = 18.0
 @export var speed: float = 380.0
 
-var player: Player = null
+var player = null
 var is_magnetized: bool = false
 
 func _ready() -> void:
 	add_to_group("gems")
-	# یافتن هاب بازیکن به محض استقرار در نقشه
+	queue_redraw()
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
-		player = players[0] as Player
+		player = players[0]
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	if player and is_instance_valid(player):
 		var dist = global_position.distance_to(player.global_position)
 		
@@ -34,15 +34,15 @@ func _physics_process(delta: float) -> void:
 			global_position += direction * speed * delta
 			
 			# افزایش تدریجی سرعت کشش برای حس بهتر بازی
-			speed += 12.0
+			speed = min(speed + 12.0, 800.0)
 			
 		# بلعیده شدن توسط بازیکن و افزایش امتیاز تجربه
 		if dist <= collect_radius:
 			collect()
 
 func collect() -> void:
-	# غیرفعال کردن موقت پروسه فیزیک جهت ممانعت از برخورد مضاعف
-	set_physics_process(false)
+	# غیرفعال کردن موقت پروسه جهت ممانعت از برخورد مضاعف
+	set_process(false)
 	
 	# افکت مکش بصری در حال انقباض نهایی
 	var tween = create_tween()
@@ -50,7 +50,7 @@ func collect() -> void:
 	
 	GameManager.add_xp(xp_value)
 	
-	tween.connect("finished", Callable(self, "queue_free"))
+	tween.finished.connect(queue_free)
 
 func _draw() -> void:
 	# ترسیم یک لوزی درخشان بنفش/فیروزه‌ای به عنوان الماس تجربه بدون عیب بصری

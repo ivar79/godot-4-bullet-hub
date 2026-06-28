@@ -21,7 +21,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			is_dragging = true
 		else:
 			is_dragging = false
-			emit_signal("joystick_released")
+			joystick_released.emit()
 			
 	elif event is InputEventScreenDrag and is_dragging:
 		var current_pos = event.position
@@ -29,4 +29,4 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 		if delta.length() > drag_threshold:
 			var movement_direction = delta.normalized()
-			emit_signal("joystick_moved", movement_direction)
+			joystick_moved.emit(movement_direction)

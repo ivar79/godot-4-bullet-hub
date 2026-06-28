@@ -20,7 +20,7 @@ func _ready() -> void:
 
 func _create_new_enemy() -> CharacterBody2D:
 	var enemy = enemy_scene.instantiate() as CharacterBody2D
-	# ممانعت از قرار گرفتن تصادفی در درخت صحنه قبل از اسپون واقعی
+	add_child(enemy)
 	return enemy
 
 func get_enemy() -> CharacterBody2D:

@@ -15,15 +15,16 @@ extends CharacterBody2D
 @export var score_value: int = 10
 
 var current_health: float = 30.0
-var target_player: Player = null
+var target_player = null
 var damage_cooldown: float = 0.8
 var damage_timer: float = 0.0
+var enemy_color: Color = Color(0.9, 0.2, 0.2)
 
 func _ready() -> void:
 	add_to_group("enemies")
 	reset_state()
 	
-	EventBus.connect("player_spawned", Callable(self, "_on_player_spawned"))
+	EventBus.player_spawned.connect(_on_player_spawned)
 	
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
@@ -63,16 +64,14 @@ func take_damage(amount: float) -> void:
 
 func die() -> void:
 	# انتشار رویداد جهت ثبت امتیاز و انداختن جم تجربه (XP Gem) روی زمین
-	EventBus.emit_signal("enemy_died", self, score_value, xp_value)
+	EventBus.enemy_died.emit(self, score_value, xp_value)
 	
 	# بازگشت خاضعانه به استخر حافظه EnemyPool بجای حذف فیزیکی جهت بهینه‌سازی پردازش موبایل
 	EnemyPool.return_to_pool(self)
 
 func _on_player_spawned(player_node: CharacterBody2D) -> void:
-	target_player = player_node as Player
+	target_player = player_node
 
 func _draw() -> void:
-	# ترسیم یک مربع یا رنگ قرمز ساده به عنوان نماد زامبی فاقد اسپرایت
-	draw_rect(Rect2(-14, -14, 28, 28), Color(0.9, 0.2, 0.2, 0.8), true)
-	# رسم حاشیه مشکی کوچک
+	draw_rect(Rect2(-14, -14, 28, 28), enemy_color, true)
 	draw_rect(Rect2(-14, -14, 28, 28), Color.BLACK, false, 2.0)
