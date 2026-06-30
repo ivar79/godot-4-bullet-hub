@@ -3,7 +3,7 @@ extends Area2D
 
 # -------------------------------------------------------------
 # XPGem - بلور یا گوهر تجربه حاصل از مرگ زامبی‌ها
-# نقش: رها شدن روی زمین، کشیده شدن مگنتی به سمت بازیکن در صورت نزدیکی
+# نقش: رها شدن روی زمین, کشیده شدن مگنتی به سمت بازیکن در صورت نزدیکی
 # و افزایش تراز تجربه (XP) در GameManager پس از لمس مستقیم بازیکن.
 # -------------------------------------------------------------
 
@@ -26,8 +26,13 @@ func _process(delta: float) -> void:
 	if player and is_instance_valid(player):
 		var dist = global_position.distance_to(player.global_position)
 		
+		# محاسبه شعاع آهنربا بر اساس ارتقاءهای بازیکن
+		var actual_magnet_radius = magnet_radius
+		if "magnet_multiplier" in player:
+			actual_magnet_radius *= player.magnet_multiplier
+		
 		# فعال‌سازی کشش مغناطیسی (مکانیک بسیار جذاب و اعتیادآور روگ‌لایک)
-		if dist <= magnet_radius or is_magnetized:
+		if dist <= actual_magnet_radius or is_magnetized:
 			is_magnetized = true
 			# حرکت مستقیم و پرشتاب به سمت مغناطیس بازیکن
 			var direction = (player.global_position - global_position).normalized()

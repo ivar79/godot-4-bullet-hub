@@ -14,7 +14,7 @@ func _ready() -> void:
 	GameManager.start_game()
 
 func _on_enemy_died(enemy_node: CharacterBody2D, _score: int, xp_value: int) -> void:
-	var gem_instance = XPGemScene.instantiate() as XPGem
+	var gem_instance = XPGemScene.instantiate()
 	gem_instance.xp_value = xp_value
 	gem_instance.global_position = enemy_node.global_position
 	call_deferred("add_child", gem_instance)

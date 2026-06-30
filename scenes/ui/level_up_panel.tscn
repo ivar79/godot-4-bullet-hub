@@ -31,10 +31,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -180.0
-offset_right = 200.0
-offset_bottom = 180.0
+offset_left = -230.0
+offset_top = -220.0
+offset_right = 230.0
+offset_bottom = 220.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -66,7 +66,7 @@ custom_minimum_size = Vector2(0, 15)
 layout_mode = 2
 
 [node name="Option1" type="Button" parent="Control/Panel/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 45)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 
 [node name="Spacer2" type="Control" parent="Control/Panel/MarginContainer/VBoxContainer"]
@@ -74,7 +74,7 @@ custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
 [node name="Option2" type="Button" parent="Control/Panel/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 45)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 
 [node name="Spacer3" type="Control" parent="Control/Panel/MarginContainer/VBoxContainer"]
@@ -82,5 +82,5 @@ custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
 [node name="Option3" type="Button" parent="Control/Panel/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 45)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2

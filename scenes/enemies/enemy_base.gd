@@ -19,6 +19,12 @@ var target_player = null
 var damage_cooldown: float = 0.8
 var damage_timer: float = 0.0
 var enemy_color: Color = Color(0.9, 0.2, 0.2)
+var is_boss: bool = false
+var is_final_boss: bool = false
+
+# مکانیزم کاهش سرعت (اسلو شدن دشمن با سلاح سرعت شلیک افسانه‌ای)
+var speed_multiplier: float = 1.0
+var slow_timer: float = 0.0
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -33,17 +39,35 @@ func _ready() -> void:
 func reset_state() -> void:
 	current_health = max_health
 	damage_timer = 0.0
+	speed_multiplier = 1.0
+	slow_timer = 0.0
+	is_boss = false
+	is_final_boss = false
+	scale = Vector2.ONE
+	modulate = Color.WHITE
 	# رسم یک مربع قرمز ساده به عنوان پلیس‌هولدر بصری
 	queue_redraw()
+
+func apply_slow(factor: float, duration: float) -> void:
+	speed_multiplier = factor
+	slow_timer = duration
+	# تغییر رنگ موقت دشمن به آبی مایل به بنفش برای بازخورد بصری اسلو شدن
+	modulate = Color(0.4, 0.6, 1.0)
 
 func _physics_process(delta: float) -> void:
 	if damage_timer > 0.0:
 		damage_timer -= delta
 
+	if slow_timer > 0.0:
+		slow_timer -= delta
+		if slow_timer <= 0.0:
+			speed_multiplier = 1.0
+			modulate = Color.WHITE
+
 	if target_player and is_instance_valid(target_player):
-		# ۱. الگوی حرکت تعقیبی به سمت بازیکن
+		# ۱. الگوی حرکت تعقیبی به سمت بازیکن با در نظر گرفتن کاهش سرعت
 		var direction = (target_player.global_position - global_position).normalized()
-		velocity = direction * speed
+		velocity = direction * speed * speed_multiplier
 		move_and_slide()
 		
 		# ۲. تشخیص تماس بدنی و تحمیل آسیب ضربانی به مبارز در صورت نزدیکی زیاد
@@ -73,5 +97,16 @@ func _on_player_spawned(player_node: CharacterBody2D) -> void:
 	target_player = player_node
 
 func _draw() -> void:
-	draw_rect(Rect2(-14, -14, 28, 28), enemy_color, true)
-	draw_rect(Rect2(-14, -14, 28, 28), Color.BLACK, false, 2.0)
+	if is_final_boss:
+		# رسم باس نهایی: پادشاه تاریکی با بدنه تیره، دورگیری قرمز درخشان و دو شاخ دفاعی تیز
+		draw_rect(Rect2(-24, -24, 48, 48), Color(0.12, 0.05, 0.25), true)
+		draw_rect(Rect2(-24, -24, 48, 48), Color(0.9, 0.1, 0.1), false, 4.0)
+		draw_line(Vector2(-24, -24), Vector2(-36, -36), Color(0.9, 0.1, 0.1), 3.0)
+		draw_line(Vector2(24, -24), Vector2(36, -36), Color(0.9, 0.1, 0.1), 3.0)
+	elif is_boss:
+		# رسم مینی‌باس: بدنه بنفش پررنگ با حاشیه طلایی رنگ برای ابهت بیشتر
+		draw_rect(Rect2(-16, -16, 32, 32), Color(0.45, 0.05, 0.65), true)
+		draw_rect(Rect2(-16, -16, 32, 32), Color(1.0, 0.85, 0.2), false, 3.0)
+	else:
+		draw_rect(Rect2(-14, -14, 28, 28), enemy_color, true)
+		draw_rect(Rect2(-14, -14, 28, 28), Color.BLACK, false, 2.0)

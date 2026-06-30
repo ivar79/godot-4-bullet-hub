@@ -11,10 +11,13 @@ extends CanvasLayer
 @onready var resume_btn: Button = $Control/PausePanel/VBoxContainer/ResumeBtn
 @onready var menu_btn: Button = $Control/PausePanel/VBoxContainer/MenuBtn
 
+var announcement_label: Label
+
 func _ready() -> void:
 	EventBus.player_health_changed.connect(_on_player_health_changed)
 	EventBus.xp_collected.connect(_on_xp_collected)
 	EventBus.player_level_up.connect(_on_player_level_up)
+	EventBus.show_announcement.connect(_on_show_announcement)
 	
 	score_label.text = "Score: 0"
 	level_label.text = "Lvl: 1"
@@ -22,10 +25,50 @@ func _ready() -> void:
 	pause_btn.pressed.connect(_on_pause_pressed)
 	resume_btn.pressed.connect(_on_resume_pressed)
 	menu_btn.pressed.connect(_on_menu_pressed)
+	
+	_setup_announcement_label()
+
+func _setup_announcement_label() -> void:
+	announcement_label = Label.new()
+	announcement_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	announcement_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	announcement_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	announcement_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	announcement_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	announcement_label.grow_vertical = Control.GROW_DIRECTION_BOTH
+	announcement_label.custom_minimum_size = Vector2(320, 100)
+	# موقعیت دهی درست زیر تایمر و لول
+	announcement_label.position.y = 125.0
+	announcement_label.add_theme_font_size_override("font_size", 22)
+	announcement_label.visible = false
+	$Control.add_child(announcement_label)
+
+func _on_show_announcement(text: String, color: Color) -> void:
+	if announcement_label:
+		announcement_label.text = text
+		announcement_label.add_theme_color_override("font_color", color)
+		announcement_label.visible = true
+		announcement_label.modulate.a = 0.0
+		announcement_label.scale = Vector2(0.8, 0.8)
+		announcement_label.pivot_offset = announcement_label.size / 2.0
+		
+		var tween = create_tween().set_parallel(true)
+		tween.tween_property(announcement_label, "modulate:a", 1.0, 0.25)
+		tween.tween_property(announcement_label, "scale", Vector2(1.15, 1.15), 0.25)
+		
+		await get_tree().create_timer(3.5).timeout
+		
+		if is_instance_valid(announcement_label):
+			var fade_out = create_tween().set_parallel(true)
+			fade_out.tween_property(announcement_label, "modulate:a", 0.0, 0.3)
+			fade_out.tween_property(announcement_label, "scale", Vector2(0.8, 0.8), 0.3)
+			await fade_out.finished
+			if is_instance_valid(announcement_label):
+				announcement_label.visible = false
 
 func _process(_delta: float) -> void:
 	if GameManager.is_game_active:
-		timer_label.text = format_time(GameManager.time_elapsed)
+		timer_label.text = format_time(GameManager.time_elapsed) + " / " + format_time(GameManager.get_stage_duration()) + " | Stage: " + str(GameManager.current_stage)
 		score_label.text = "Score: " + str(GameManager.current_score)
 
 func format_time(time_in_seconds: float) -> String:

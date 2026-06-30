@@ -6,11 +6,13 @@ extends Node
 # موبایل اندرویدی باعث افت فریم ریت شدید و لگ‌های لودینگ می‌گردد.
 # -------------------------------------------------------------
 
-@export var enemy_scene: PackedScene = preload("res://scenes/enemies/enemy_base.tscn")
+# برای جلوگیری از خطای وابستگی چرخه‌ای با EnemyBase از load استفاده می‌کنیم
+var enemy_scene: PackedScene
 
 var pool: Array = []
 
 func _ready() -> void:
+	enemy_scene = load("res://scenes/enemies/enemy_base.tscn")
 	# تولید زودهنگام تعدادی دشمن در ابتدای بازی جهت افزایش پرفورمنس
 	for i in range(15):
 		var enemy = _create_new_enemy()
@@ -24,7 +26,7 @@ func _create_new_enemy() -> CharacterBody2D:
 	return enemy
 
 func get_enemy() -> CharacterBody2D:
-	var enemy: CharacterBody2D = null
+	var enemy: CharacterBody2D
 	
 	# اگر استخر خالی نبود، آخرین گره غیرفعال را گرفته و دوباره فعال می‌کنیم
 	if pool.size() > 0:
